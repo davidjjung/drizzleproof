@@ -1,0 +1,39 @@
+modLoader = "javafml"
+loaderVersion = "[32,)"
+issueTrackerURL = "https://github.com/davidjjung/drizzleproof/issues"
+license = "MIT License"
+
+[[mods]]
+modId = "drizzleproof"
+version = "${file.jarVersion}"
+logoFile = "logo.png"
+itemIcon = "minecraft:scaffolding"
+configBackground = "minecraft:textures/block/dirt.png"
+authors = "DavigJ"
+credits = "Credit to Zym for the idea, and Jasmine for suggesting the code implementation"
+displayURL = "https://github.com/davidjjung/drizzleproof"
+displayName = "Drizzleproof"
+description = '''
+    Breaking certain blocks causes their item entities to drop straight downwards.
+    '''
+
+[[dependencies.drizzleproof]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[1.19.2,1.19.3)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.drizzleproof]]
+modId = "forge"
+mandatory = true
+versionRange = "[43.3.0,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.drizzleproof]]
+modId = "blueprint"
+mandatory = true
+versionRange = "[6.2.0,)"
+ordering = "AFTER"
+side = "BOTH"

@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:scaffolding",
+    "minecraft:ladder",
+    "#minecraft:rails",
+    {
+      "id": "#quark:ladders",
+      "required": false
+    }
+  ]
+}

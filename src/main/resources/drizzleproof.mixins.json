@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.davigj.drizzleproof.core.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "refmap": "drizzleproof.refmap.json",
+  "mixins": [
+    "BlockMixin"
+  ],
+  "client": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
