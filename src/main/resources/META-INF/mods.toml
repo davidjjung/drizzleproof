@@ -8,13 +8,13 @@ modId = "drizzleproof"
 version = "${file.jarVersion}"
 logoFile = "logo.png"
 itemIcon = "minecraft:scaffolding"
-configBackground = "minecraft:textures/block/dirt.png"
+configBackground = "minecraft:textures/block/scaffolding_top.png"
 authors = "DavigJ"
-credits = "Credit to Zym for the idea, and Jasmine for suggesting the code implementation"
+credits = "Idea credit to Zym, and Jasmine for code suggestions"
 displayURL = "https://github.com/davidjjung/drizzleproof"
 displayName = "Drizzleproof"
 description = '''
-    Breaking certain blocks causes their item entities to drop straight downwards.
+    Breaking certain blocks causes their item entities to drop straight downwards, without scattering.
     '''
 
 [[dependencies.drizzleproof]]
