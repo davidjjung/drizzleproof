@@ -4,8 +4,10 @@ import com.davigj.drizzleproof.core.DrizzleproofConfig;
 import com.davigj.drizzleproof.core.other.DrizzleproofBlockTags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -21,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import javax.annotation.Nullable;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static net.minecraft.world.level.block.Block.getDrops;
 
@@ -46,8 +49,17 @@ public class BlockMixin {
     @Inject(method = "dropResources(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;)V",
             at = @At(value = "HEAD"), cancellable = true)
     private static void onDropResources(BlockState state, Level level, BlockPos pos, @Nullable BlockEntity blockEntity, Entity entity, ItemStack stack, CallbackInfo ci) {
-        if (state.is(DrizzleproofBlockTags.STATIC_BLOCKS) || DrizzleproofConfig.COMMON.allBlocksStatic.get()
-                || (DrizzleproofConfig.COMMON.silkBlocksStatic.get() && EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)) {
+        AtomicBoolean nauseous = new AtomicBoolean(false);
+        if (entity instanceof LivingEntity living) {
+            living.getActiveEffects().forEach(effectInstance -> {
+                if (effectInstance.getEffect() == MobEffects.CONFUSION) {
+                    nauseous.set(true);
+                }
+            });
+        }
+        if (DrizzleproofConfig.COMMON.allBlocksStatic.get() || (!(nauseous.get() && DrizzleproofConfig.COMMON.nauseousDisarray.get()) &&
+                (state.is(DrizzleproofBlockTags.STATIC_BLOCKS)
+                || (DrizzleproofConfig.COMMON.silkBlocksStatic.get() && EnchantmentHelper.getTagEnchantmentLevel(Enchantments.SILK_TOUCH, stack) > 0)))) {
             getDrops(state, (ServerLevel) level, pos, blockEntity, entity, stack).forEach((p_49925_) -> {
                 float f = EntityType.ITEM.getHeight() / 2.0F;
                 double d0 = (float) pos.getX() + 0.5F;
