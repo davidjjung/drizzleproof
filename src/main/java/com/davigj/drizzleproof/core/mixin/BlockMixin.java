@@ -55,9 +55,6 @@ public class BlockMixin {
                 }
             });
         }
-        System.out.println("tool used to break it has silk touch: " + (stack.getEnchantmentLevel(Enchantments.SILK_TOUCH) > 0));
-        System.out.println("player is nauseous: " + nauseous.get());
-        System.out.println("block is in static blocks: " + state.is(DrizzleproofBlockTags.STATIC_BLOCKS));
         if (DrizzleproofConfig.COMMON.allBlocksStatic.get() || (!(nauseous.get() && DrizzleproofConfig.COMMON.nauseousDisarray.get()) &&
                 (state.is(DrizzleproofBlockTags.STATIC_BLOCKS)
                         || (DrizzleproofConfig.COMMON.silkBlocksStatic.get() && stack.getEnchantmentLevel(Enchantments.SILK_TOUCH) > 0)))) {
