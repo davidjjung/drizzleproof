@@ -15,7 +15,7 @@ public class DrizzleproofConfig {
             allBlocksStatic = builder.comment("Should all blocks drop items without scattering").define("Make all blocks static", false);
             silkBlocksStatic = builder.comment("Should all blocks mined with silk touch drop items without scattering").define("Silk touch drizzleproof", true);
             nauseousDisarray = builder.comment("If a player has Nausea, all of their block drops scatter").define("Nauseous drizzle", false);
-            pepStep = builder.comment("Initial vertical velocity for dropped drizzleproof item entities").defineInRange("Item entity drop bounce multiplier", 0.85, 0, 0.2);
+            pepStep = builder.comment("Initial vertical velocity for dropped drizzleproof item entities").defineInRange("Item entity drop bounce multiplier", 0.085, 0, 0.2);
             builder.pop();
         }
     }
