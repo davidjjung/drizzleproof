@@ -2,8 +2,10 @@ package com.davigj.drizzleproof.core.mixin;
 
 import com.davigj.drizzleproof.core.DrizzleproofConfig;
 import com.davigj.drizzleproof.core.other.DrizzleproofBlockTags;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.core.BlockPos;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -14,65 +16,48 @@ import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 
-import java.util.concurrent.atomic.AtomicBoolean;
-
-import static net.minecraft.world.level.block.Block.getDrops;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 @Mixin(Block.class)
 public class BlockMixin {
-
-    @Inject(method = "popResource(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;)V", at = @At("HEAD"), cancellable = true)
-    private static void popMoreLikeLock(Level level, BlockPos pos, ItemStack stack, CallbackInfo ci) {
+    @ModifyArg(method = "popResource(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/item/ItemStack;)V",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/Block;popResource(Lnet/minecraft/world/level/Level;Ljava/util/function/Supplier;Lnet/minecraft/world/item/ItemStack;)V"), index = 1)
+    private static Supplier<ItemEntity> mollify(Supplier<ItemEntity> supplier, @Local(argsOnly = true) ItemStack stack, @Local(argsOnly = true) Level level, @Local(argsOnly = true) BlockPos pos,
+                                                @Local(ordinal = 0) double d0, @Local(ordinal = 1) double d1, @Local(ordinal = 2) double d2, @Local(ordinal = 3) double d3) {
         if (level.getBlockState(pos).is(DrizzleproofBlockTags.STATIC_BLOCKS) || DrizzleproofConfig.COMMON.allBlocksStatic.get()) {
-            float f = EntityType.ITEM.getHeight() / 2.0F;
-            double d0 = (float) pos.getX() + 0.5F;
-            double d1 = (double) ((float) pos.getY() + 0.5F) - (double) f;
-            double d2 = (float) pos.getZ() + 0.5F;
-            ItemEntity itemEntity = new ItemEntity(level, d0, d1, d2, stack);
-            if (!level.isClientSide && !stack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !level.restoringBlockSnapshots) {
-                itemEntity.setDeltaMovement(0, 0.05, 0);
-                level.addFreshEntity(itemEntity);
-            }
-            ci.cancel();
+            return () -> new ItemEntity(level, d1, d2, d3, stack, 0, DrizzleproofConfig.COMMON.pepStep.get(), 0);
+        } else {
+            return supplier;
         }
     }
 
-    @Inject(method = "dropResources(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;Z)V",
-            at = @At(value = "HEAD"), cancellable = true, remap = false)
-    private static void onPlop(BlockState state, Level level, BlockPos pos, BlockEntity blockEntity, Entity entity, ItemStack stack, boolean dropXP, CallbackInfo ci) {
-        AtomicBoolean nauseous = new AtomicBoolean(false);
-        if (entity instanceof LivingEntity living) {
-            living.getActiveEffects().forEach(effectInstance -> {
-                if (effectInstance.getEffect() == MobEffects.CONFUSION) {
-                    nauseous.set(true);
+    @WrapOperation(method = "dropResources(Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/entity/BlockEntity;Lnet/minecraft/world/entity/Entity;Lnet/minecraft/world/item/ItemStack;Z)V",
+            at = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V"), remap = false)
+    private static void onPlop(List<ItemStack> instance, Consumer<ItemStack> consumer, Operation<Void> original,
+                               @Local(argsOnly = true) BlockState state, @Local(argsOnly = true) Level level, @Local(argsOnly = true) BlockPos pos,
+                               @Local(argsOnly = true) Entity entity, @Local(argsOnly = true) ItemStack stack) {
+        boolean sick = entity instanceof LivingEntity living && living.hasEffect(MobEffects.CONFUSION);
+        if (DrizzleproofConfig.COMMON.allBlocksStatic.get() || (!(sick && DrizzleproofConfig.COMMON.nauseousDisarray.get()) &&
+                (state.is(DrizzleproofBlockTags.STATIC_BLOCKS) ||
+                        (DrizzleproofConfig.COMMON.silkBlocksStatic.get() && stack.getEnchantmentLevel(Enchantments.SILK_TOUCH) > 0)))) {
+            instance.forEach(((ItemStack itemStack) -> {
+                float f = EntityType.ITEM.getHeight() / 2.0F;
+                double d1 = (double) ((float) pos.getY() + 0.5F) - (double) f;
+                ItemEntity itemEntity = new ItemEntity(level, (float) pos.getX() + 0.5F, d1, (float) pos.getZ() + 0.5F,
+                        itemStack, 0, DrizzleproofConfig.COMMON.pepStep.get(), 0);
+                if (!level.isClientSide && !itemStack.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !level.restoringBlockSnapshots) {
+                    level.addFreshEntity(itemEntity);
                 }
-            });
+            }));
+            return;
         }
-        if (DrizzleproofConfig.COMMON.allBlocksStatic.get() || (!(nauseous.get() && DrizzleproofConfig.COMMON.nauseousDisarray.get()) &&
-                (state.is(DrizzleproofBlockTags.STATIC_BLOCKS)
-                        || (DrizzleproofConfig.COMMON.silkBlocksStatic.get() && stack.getEnchantmentLevel(Enchantments.SILK_TOUCH) > 0)))) {
-            if (level instanceof ServerLevel) {
-                getDrops(state, (ServerLevel) level, pos, blockEntity, entity, stack).forEach((p_49925_) -> {
-                    float f = EntityType.ITEM.getHeight() / 2.0F;
-                    double d0 = (float) pos.getX() + 0.5F;
-                    double d1 = (double) ((float) pos.getY() + 0.5F) - (double) f;
-                    double d2 = (float) pos.getZ() + 0.5F;
-                    ItemEntity itemEntity = new ItemEntity(level, d0, d1, d2, p_49925_);
-                    if (!level.isClientSide && !p_49925_.isEmpty() && level.getGameRules().getBoolean(GameRules.RULE_DOBLOCKDROPS) && !level.restoringBlockSnapshots) {
-                        itemEntity.setDeltaMovement(0, 0.05, 0);
-                        level.addFreshEntity(itemEntity);
-                    }
-                });
-                state.spawnAfterBreak((ServerLevel) level, pos, stack, dropXP);
-                ci.cancel();
-            }
-        }
+        original.call(instance, consumer);
     }
 }
