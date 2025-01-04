@@ -9,6 +9,10 @@
       "required": false
     },
     {
+      "id": "#blueprint:wooden_ladders",
+      "required": false
+    },
+    {
       "id": "create:andesite_scaffolding",
       "required": false
     },
