@@ -1,6 +1,5 @@
 package com.davigj.drizzleproof.core;
 
-import com.teamabnormals.blueprint.core.util.registry.RegistryHelper;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.data.event.GatherDataEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -14,14 +13,11 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 @Mod(Drizzleproof.MOD_ID)
 public class Drizzleproof {
     public static final String MOD_ID = "drizzleproof";
-    public static final RegistryHelper REGISTRY_HELPER = new RegistryHelper(MOD_ID);
 
     public Drizzleproof() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModLoadingContext context = ModLoadingContext.get();
         MinecraftForge.EVENT_BUS.register(this);
-
-		REGISTRY_HELPER.register(bus);
 
         bus.addListener(this::commonSetup);
         bus.addListener(this::clientSetup);
