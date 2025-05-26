@@ -1,17 +1,20 @@
 modLoader = "javafml"
-loaderVersion = "[47,)"
+loaderVersion = "[1,)"
 issueTrackerURL = "https://github.com/davidjjung/drizzleproof/issues"
 license = "MIT License"
 
+[[mixins]]
+config = "drizzleproof.mixins.json"
+
 [[mods]]
 modId = "drizzleproof"
-version = "${file.jarVersion}"
+version = "${mod_version}"
 logoFile = "logo.png"
 itemIcon = "minecraft:scaffolding"
 configBackground = "minecraft:textures/block/scaffolding_top.png"
 authors = "DavigJ"
-credits = "Idea credit to Zym, and Jasmine for code suggestions"
-displayURL = "https://github.com/davidjjung/drizzleproof"
+credits = "Zym, Jasmine"
+displayURL = "https://modrinth.com/project/drizzleproof"
 displayName = "Drizzleproof"
 description = '''
     Breaking certain blocks causes their item entities to drop straight downwards, without scattering.
@@ -19,14 +22,14 @@ description = '''
 
 [[dependencies.drizzleproof]]
 modId = "minecraft"
-mandatory = true
-versionRange = "[1.20.1,1.20.2)"
-ordering = "NONE"
+type = "required"
+versionRange = "[${mc_version}]"
+ordering = "AFTER"
 side = "BOTH"
 
 [[dependencies.drizzleproof]]
-modId = "forge"
-mandatory = true
-versionRange = "[47.1.0,)"
-ordering = "NONE"
+modId = "neoforge"
+type = "required"
+versionRange = "[${neoforge},)"
+ordering = "AFTER"
 side = "BOTH"

@@ -5,7 +5,6 @@
   "minVersion": "0.8",
   "refmap": "drizzleproof.refmap.json",
   "mixins": [
-    "BlockMixin"
   ],
   "client": [
   ],
